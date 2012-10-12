@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="JcropDemo"
+  id="myeclipse.1350051998136"
+  context-root="/JcropDemo"
+  j2ee-spec="5.0"
+  archive="JcropDemo.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
