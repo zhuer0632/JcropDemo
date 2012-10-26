@@ -18,28 +18,26 @@
 			//弹出子页面
 			function opendiv()
 			{	 	
-				var args="parent_page_id=123456";
-			 	art.dialog.open(
-					"${path}/art/upload_page.do?"+args+"",
-					{
-						lock : true,
-						background : 'gray', //背景颜色
-						opacity : 0.4,	//淡化背景颜色
-						width : '800px',
-						height : '600px',
-						drag : true,
-						title : "显示的子页面标题头",
-						resize : true,
-						fixed : true
-					}
-				);
+			var args="requestid=123456&fieldName=photo";
+		 	art.dialog.open(
+				"${path}/art/upload_page.do?"+args+"",
+				{
+					lock : true,
+					background : 'gray', //背景颜色
+					opacity : 0.4,	//淡化背景颜色
+					width : '650px',
+					height : '450px',
+					drag : true,
+					title : "上传照片",
+					resize : true,
+					fixed : true
+				}
+			);
 			}
 		</script>
-		
-
 
 		
-	</head>
+</head>
 	<body>
 		<div style="text-align: center;">
 			

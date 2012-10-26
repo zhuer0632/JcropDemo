@@ -146,11 +146,11 @@ SWFUpload.prototype.initSettings = function () {
 	
 	// Button Settings
 	this.ensureDefault("button_image_url", "");
-	this.ensureDefault("button_width", 1);
-	this.ensureDefault("button_height", 1);
-	this.ensureDefault("button_text", "");
-	this.ensureDefault("button_text_style", "color: #000000; font-size: 16pt;");
-	this.ensureDefault("button_text_top_padding", 0);
+	this.ensureDefault("button_width", 125);
+	this.ensureDefault("button_height", 25);
+	this.ensureDefault("button_text", "<span class='button_swf'>浏览...</span>");
+	this.ensureDefault("button_text_style", ".button_swf {width:125px; height:25px; font-size:12px; vertical-align: middle; font-family:'微软雅黑', ''黑体; color:#1c527a; }");
+	this.ensureDefault("button_text_top_padding", 4);
 	this.ensureDefault("button_text_left_padding", 0);
 	this.ensureDefault("button_action", SWFUpload.BUTTON_ACTION.SELECT_FILES);
 	this.ensureDefault("button_disabled", false);
@@ -158,7 +158,7 @@ SWFUpload.prototype.initSettings = function () {
 	this.ensureDefault("button_placeholder", null);
 	this.ensureDefault("button_cursor", SWFUpload.CURSOR.HAND);
 	this.ensureDefault("button_window_mode", SWFUpload.WINDOW_MODE.WINDOW);
-	
+	//button_cursor : SWFUpload.BUTTON_CURSOR.HAND,
 	// Debug Settings
 	this.ensureDefault("debug", false);
 	this.settings.debug_enabled = this.settings.debug;	// Here to maintain v2 API
@@ -167,15 +167,16 @@ SWFUpload.prototype.initSettings = function () {
 	this.settings.return_upload_start_handler = this.returnUploadStart;
 	this.ensureDefault("swfupload_loaded_handler", null);
 	this.ensureDefault("file_dialog_start_handler", null);
-	this.ensureDefault("file_queued_handler", null);
-	this.ensureDefault("file_queue_error_handler", null);
-	this.ensureDefault("file_dialog_complete_handler", null);
+	this.ensureDefault("file_queued_handler", fileQueued);
+	this.ensureDefault("file_queue_error_handler",fileQueueError );
+	this.ensureDefault("file_dialog_complete_handler", fileDialogComplete);
 	
-	this.ensureDefault("upload_start_handler", null);
-	this.ensureDefault("upload_progress_handler", null);
-	this.ensureDefault("upload_error_handler", null);
-	this.ensureDefault("upload_success_handler", null);
-	this.ensureDefault("upload_complete_handler", null);
+	this.ensureDefault("upload_start_handler", uploadStart);
+	this.ensureDefault("upload_progress_handler", uploadProgress);
+	this.ensureDefault("upload_error_handler", uploadError);
+	this.ensureDefault("upload_success_handler", uploadSuccess);
+	this.ensureDefault("upload_complete_handler", uploadComplete);
+	this.ensureDefault("queue_complete_handler", queueComplete);
 	
 	this.ensureDefault("debug_handler", this.debugMessage);
 
@@ -230,7 +231,7 @@ SWFUpload.prototype.loadFlash = function () {
 SWFUpload.prototype.getFlashHTML = function () {
 	// Flash Satay object syntax: http://www.alistapart.com/articles/flashsatay
 	return ['<object id="', this.movieName, '" type="application/x-shockwave-flash" data="', this.settings.flash_url, '" width="', this.settings.button_width, '" height="', this.settings.button_height, '" class="swfupload">',
-				'<param name="wmode" value="', this.settings.button_window_mode, '" />',
+				'<param name="wmode" value="transparent" />',
 				'<param name="movie" value="', this.settings.flash_url, '" />',
 				'<param name="quality" value="high" />',
 				'<param name="menu" value="false" />',
