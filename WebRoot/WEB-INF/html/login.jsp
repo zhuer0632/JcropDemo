@@ -13,9 +13,14 @@
 			<div>
 				<a href="${path}/Image/test01.do">基于官方的一个简单修改--仅仅有html</a>
 			</div>
+			
 
 			<div>
 				<a href="${path}/Image/test02.do">上传+裁剪+含有服务器端处理</a>
+			</div>
+			
+			<div>
+				<a href="${path}/Image/test03.do">纯粹的js显示值图片再初始化jcrop</a>
 			</div>
 	</body>
 </html>

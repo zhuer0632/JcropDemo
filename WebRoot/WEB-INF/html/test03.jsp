@@ -3,16 +3,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<title>基于官方的一个简单修改--仅仅有html</title>
+		<title>先用js设置图片后再初始化jcrop</title>
 		<link href="${path}/demo_files01/jquery.Jcrop.css" rel="stylesheet" type="text/css" />
 
 		  <script src="${path}/js/jquery-1.7.2.js" type="text/javascript"></script>
-		  <script src="${path}/demo_files01/jquery.Jcrop.js" type="text/javascript"></script>
+		  <script src="${path}/demo_files03/jquery.Jcrop.js" type="text/javascript"></script>
 		  <script type="text/javascript">
         var jcrop_api, boundx, boundy;
         
         //ready
         $(document).ready(function () {
+        
+        	setImg();
+        	showJcrop();
+        });
+        
+        function setImg()
+        {
+        	$("#preview").attr("src","${path}/demo_files03/lh.jpg");
+        	$("#target").attr("src","${path}/demo_files03/lh.jpg");
+        }
+        
+        function  showJcrop()
+        {
             $('#target').Jcrop({
                 onChange: updatePreview,
                 onSelect: updatePreview,
@@ -20,16 +33,14 @@
                 minSize: [120, 150], //设置最小选中区域
                 //maxSize:[100,150],
                 setSelect: [10, 10, 130, 160] //实际选中的区域
-
             }, function () {
-
                 var bounds = this.getBounds();
                 boundx = bounds[0]; //原始大图的宽度[我们所看到的]
                 boundy = bounds[1]; //原始大图的高度[我们所看到的]
                 jcrop_api = this;
-                
             });
-        });
+        }
+        
         //ready over
        	
         //变量说明
@@ -40,9 +51,7 @@
             if (parseInt(c.w) > 0) {
                 var rx = 120 / c.w; //缩略图宽度和实际选中的区域的宽度的比例
                 var ry = 150 / c.h; //缩略图高度和实际选中的区域的高度的比例
-				
                 $('#preview').css({
-
                     width: Math.round(rx * boundx) + 'px', //对于原始图来说被缩放后的宽度
                     height: Math.round(ry * boundy) + 'px', //对于原始图来说被缩放后的高度
 					
@@ -59,13 +68,14 @@
 		  <table>
             <tr>
  	          <td>
-                    <img src="${path}/demo_files01/pool.jpg"  id="target" alt="Flowers" />
+                    <img src=""  onload="this.style.display='block'"  id="target" alt="Flowers" />
                 </td>
                 <td>
                     <div style="width: 120px; height: 150px; border:1px solid red; overflow:hidden; ">
-                        <img src="${path}/demo_files01/pool.jpg" id="preview" alt="Preview" class="jcrop-preview" />
+                        <img src=""  onload="this.style.display='block'"  id="preview" alt="Preview" class="jcrop-preview" />
                     </div>
                 </td>
+                
                 
             </tr>
         </table>

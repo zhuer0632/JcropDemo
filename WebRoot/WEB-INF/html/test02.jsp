@@ -35,14 +35,12 @@
 			);
 			}
 		</script>
-
-		
 </head>
 	<body>
 		<div style="text-align: center;">
 			
 			<div style="height: 150px;width: 120px; border: 1px solid red;margin: 20px auto;">
-				 <img id="returndata" width="120px" height="150px;" src="" alt="" />	
+				 <img id="returndata" width="120px" height="150px;" style="display:none" src="" alt="" />	
 			</div>
 			
 		<div>

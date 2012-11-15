@@ -4,7 +4,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>上传页面</title>
-		<link href="${path}/demo_files01/jquery.Jcrop.css" rel="stylesheet" type="text/css" />
+		<link href="${path}/demo_files02/jquery.Jcrop.css" rel="stylesheet" type="text/css" />
 		
 		<script src="${path}/js/jquery-1.7.2.js" ></script>
 		<script src="${path}/js/common.js" ></script>
@@ -15,7 +15,7 @@
 		<script src="${path}/swf_resource/swfupload.queue.js"></script>
 		<script src="${path}/swf_resource/fileprogress.js"></script>
 		<script src="${path}/swf_resource/handlers.js"></script>
-		<script src="${path}/demo_files01/jquery.Jcrop.js" ></script>
+		<script src="${path}/demo_files02/jquery.Jcrop.js" ></script>
 		
 	<script>
 	$(document).ready(function() 
@@ -28,40 +28,38 @@
 	function create_thumb()
 	{
 		$('#target').Jcrop({
+              	onChange: updatePreview,
+                onSelect: updatePreview,
                 aspectRatio: 4 / 5, // 更改选中区域大小的时候，指定的比例。不要跟下面的选中区域大小相矛盾。
-                minSize: [120, 150], //设置最小选中区域
-                onChange: updatePreview,
-               	onSelect: updatePreview
-				
-            }, function () {
+                minSize: [120, 150]  //设置最小选中区域
+                //maxSize:[100,150],
+            }, 
+            function () 
+            {
                 var bounds = this.getBounds();
                 boundx = bounds[0]; //原始大图的宽度[我们所看到的]
                 boundy = bounds[1]; //原始大图的高度[我们所看到的]
-                jcrop_api = this;
-                
                 //由于第一次的图片会遗留变量boundx,boundy.下面重新刷新一下用于清除该变量。
+                jcrop_api = this;
 				jcrop_api.setSelect([10, 10, 130, 160]);
-				
 				if(boundx<120||boundy<150)
 				{    
 				 	 clear_();
 				 	 jcrop_api.destroy();
+					
+					 //onload="this.style.display='block'" style="display:none"
+					  
+					 $("#target").attr("onload","this.style.display='block'");
+					 $("#target").attr("style","display:none");
+					 $("#preview").attr("onload","this.style.display='block'");
+					 $("#preview").attr("style","display:none");
+					 
 					 alert("图片最小不能小于120*150(w*h)");
+					 
 					 //return false;
 				}
             });
             
-         	function clear_()
-			{
-				$("#target").attr("src","");
-				$("#preview").attr("src","");
-				 
-				 $("#target").removeAttr("style");
-				 $("#preview").removeAttr("style");
-				 
-				 $("#process").text("");
-			}
-       	
         //变量说明
         // boundx,boundy  原图宽高比
         // c.w c.h    选中区域的高宽
@@ -83,22 +81,23 @@
             $("#h").val("150");
             $("#r").val(rx);
         };
-        
 	}
 	
-		
+ 	function clear_()
+	{
+		$("#target").attr("src","");
+		$("#preview").attr("src","");
+		 $("#target").removeAttr("style");
+		 $("#preview").removeAttr("style");
+		 $("#process").text("");
+	}
         	
 	function closediv()
 	{
 			art.dialog.close();
 	}
 	
-	function save_all()
-	{
-		//暂停一会再关闭
-		window.setTimeout("closediv()",500);
-	}
-	
+		
 	function save_part()
 	{
 		//取得页面上的参数：如果参数太多，可以用 var args=getPostDatas($(document));[common.js]
@@ -118,11 +117,14 @@
 		//设置回父窗口，然后关闭当前页面
 		var origin=artDialog.open.origin;
 		var returnElement = origin.document.getElementById('returndata');
-		returnElement.src=result['result'];
-		art.dialog.tips("数据取得成功(1秒后关闭)");
+		$(returnElement).attr("src",result['result']);
+		$(returnElement).attr("style","");
 		
+		//alert(result['result']);
+		//art.dialog.tips("头像设置成功");
+		alert("头像设置成功");
 		//暂停一会再关闭
-		window.setTimeout("closediv()",1000);
+		window.setTimeout("closediv()",10);
 	}
 	
 	//创建上传按钮
@@ -190,16 +192,15 @@ function uploadComplete_(file) {
 			jcrop_api.destroy();
 		}
 		
-		$("#target").attr("src","");
-		$("#preview").attr("src","");
+		//$("#target").attr("src","");
+		//$("#preview").attr("src","");
 		
-		$("#target").removeAttr("style");
-		$("#preview").removeAttr("style");
-	
+		//$("#target").removeAttr("style");
+		//$("#preview").removeAttr("style");
 		$("#target").attr("src",downurl);
 		$("#preview").attr("src",downurl);
-		
 		$("#file_name").val(file.name);
+		
 		create_thumb();
 	}
 }
@@ -234,11 +235,11 @@ function uploadComplete_(file) {
 			 		</tr>
 			 		<tr>
 			 			<td width="450px" height="300px">
-			 				<img  id="target"  src="" alt="" />
+			 				<img  id="target"  onload="this.style.display='block'"  style="display:none" src="" alt="" />
 			 			</td>
 			 			<td  width="150px" align="center"> 
 			 				<div style="width: 120px; height: 150px; border:1px solid red; overflow:hidden; ">
-                        		<img src="" id="preview" alt="Preview" class="jcrop-preview" />
+                        		<img src="" onload="this.style.display='block'" style="display:none" id="preview" alt="Preview" class="jcrop-preview" />
                     		</div>
 			 			</td>
 			 		</tr>
