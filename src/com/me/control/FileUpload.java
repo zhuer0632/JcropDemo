@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.me.ut.DateTimeUT;
+import com.me.ut.FileUT;
 import com.me.ut.ImageUtils;
 import com.me.ut.StringUT;
 import com.me.ut.WebPath;
@@ -35,50 +38,93 @@ import com.me.ut.WebPath;
 public class FileUpload {
     
     // 上传大图,返回当前原始大图的下载地址
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "save_pic", method = RequestMethod.POST)
-    public @ResponseBody
-    Map save_pic(@RequestParam("Filedata") MultipartFile file,
-	    @RequestParam("requestid") String requestid,
-	    @RequestParam("fieldName") String fieldName) {
-	Map out = new HashMap();
-	System.out.println("--\r\n");
-	System.out.println("requestid=" + requestid);// 用于表示跟那个表单相关联
-	System.out.println("--\r\n");
+   public ModelAndView save_pic(@RequestParam("Filedata") MultipartFile file,
+                                       @RequestParam("requestid") String requestid,
+                                       @RequestParam("fieldName") String fieldName,
+                                       HttpServletRequest request)
+    {
 
-	String filename = file.getOriginalFilename();
-	OutputStream output = null;
-	File outfile = null;
-	try {
-	    filename = new String(filename.getBytes("ISO-8859-1"), "UTF-8");
-	    String folderpath = WebPath.getUploadRootPath()
-		    + File.separatorChar + requestid + File.separatorChar
-		    + fieldName + File.separatorChar;
-	    if (!(new File(folderpath).exists())) {
-		new File(folderpath).mkdirs();
-	    }
+        ModelAndView mod = new ModelAndView();
 
-	    String filePath = folderpath + filename;
+        StringUT.printErr("当前上传域：" + fieldName);
+        OutputStream output = null;
+        File outfile = null;
+        String fileName = "";
+        try
+        {
+            // MultipartFile是对当前上传的文件的封装a
+            if (!file.isEmpty())
+            {
+                fileName = new String(file.getOriginalFilename()
+                        .getBytes("ISO-8859-1"), "UTF-8");
 
-	    outfile = new File(filePath);
-	    output = new FileOutputStream(outfile);
-	    IOUtils.copy(file.getInputStream(), output);
-
-	    System.out.println(filename);
-	    processImg(filePath);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	} finally {
-	    if (output != null) {
-		try {
-		    output.close();
-		} catch (IOException ioe) {
-		    ioe.printStackTrace();
-		}
-	    }
-	}
-	return out;
+                //删除文件名中的单引号，因为有单引号的时候，文件名会被截断，js变量不能传递。
+                fileName=StringUtils.replace(fileName, "'", "");
+                
+                System.out.println("上传的文件的文件名是：" + (fileName));
+                String filepath = StringUT.getUploadFiles(requestid);
+                filepath = filepath + fieldName + "/";
+                if (!(new File(filepath).exists()))
+                {
+                    new File(filepath).mkdirs();
+                }
+                outfile = new File(filepath + fileName);
+                output = new FileOutputStream(outfile);
+                IOUtils.copy(file.getInputStream(),
+                             output);
+                // store the bytes somewhere
+                // 在这里就可以对file进行处理了，可以根据自己的需求把它存到数据库或者服务器的某个文件夹
+            }
+            else
+            {
+                StringUT.print("上传失败");
+                mod.addObject("uploadstate",
+                              "上传失败");
+            }
+        }
+        catch (Exception e)
+        {
+            StringUT.printErr(e);
+            // 此处一定要关闭
+            if (output != null)
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+            }
+            // 如果上传过程中出现异常：告知前台错误
+            mod.setViewName("fieldtest");
+            mod.addObject("fielderr",
+                          "上传文件" + fileName + "的时候出现错误");
+            return mod;
+        }
+        finally
+        {
+            // 此处一定要关闭
+            if (output != null)
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // /v/upload/doupload.do
+        mod.setViewName("upload_page");
+        return mod;
     }
+    
+    
 
     // 图床的大小为w:450 h:300;如果超出了图床的大小就缩小
     private static double w_ = 450.0;
@@ -131,7 +177,8 @@ public class FileUpload {
 	    @RequestParam("x") double x, @RequestParam("y") double y,
 	    @RequestParam("w") double w, @RequestParam("h") double h,
 	    @RequestParam("r") double r// 缩放的比例
-    ) {
+    ) 
+    {
 	Map map = new HashMap();
 	String filepath = WebPath.getUploadRootPath() + File.separatorChar
 		+ requestid + File.separatorChar + fieldName
@@ -149,15 +196,15 @@ public class FileUpload {
 
 	File f = new File(result);
 	f.setLastModified(DateTimeUT.getNowNum() + 1000 * 60);
-
+	
 	String fileName_ = "thumb" + rnd + ".jpg";
 	fileName_ = StringUT.Base64_encode(fileName_, "UTF-8");
-	map.put("result", WebPath.SYS_PATH + "/art_photo/downIMG.do?requestid="
+	map.put("result", WebPath.SYS_PATH + "/FileUpload/downIMG.do?requestid="
 		+ requestid + "&fieldName=" + fieldName + "&fileName="
 		+ fileName_ + "");
 	return map;
     }
-
+    
     @RequestMapping("downIMG")
     public ModelAndView downIMG(@RequestParam("requestid") String requestid,
 	    @RequestParam("fieldName") String fieldName,
@@ -223,6 +270,32 @@ public class FileUpload {
 		}
 	}
 	return null;
+    }
+    
+    // 删除文件
+    @SuppressWarnings("unchecked")
+    @RequestMapping("/delFile")
+    public @ResponseBody
+    Map delFile(@RequestBody String queryIn)
+    {
+        Map map = StringUT.url2Map(queryIn);
+
+        try
+        {
+            String requestId = String.valueOf(map.get("requestId"));
+            String fieldName = String.valueOf(map.get("fieldName"));
+            String fileName = String.valueOf(map.get("fileName"));
+
+            FileUT.del(requestId,
+                       fieldName,
+                       fileName);
+            StringUT.print("删除了文件：" + fileName);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return map;
     }
 
 }

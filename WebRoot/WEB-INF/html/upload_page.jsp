@@ -5,6 +5,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>上传页面</title>
 		<link href="${path}/demo_files02/jquery.Jcrop.css" rel="stylesheet" type="text/css" />
+		<link href="${path}/swf_resource/upload.css" rel="stylesheet" type="text/css" />
 		
 		<script src="${path}/js/jquery-1.7.2.js" ></script>
 		<script src="${path}/js/common.js" ></script>
@@ -15,14 +16,16 @@
 		<script src="${path}/swf_resource/swfupload.queue.js"></script>
 		<script src="${path}/swf_resource/fileprogress.js"></script>
 		<script src="${path}/swf_resource/handlers.js"></script>
-		<script src="${path}/demo_files02/ut.js"></script>
+		<script src="${path}/swf_resource/upload.js"></script>
 		<script src="${path}/demo_files02/jquery.Jcrop.js" ></script>
 		
 	<script>
+	
 	$(document).ready(function() 
 	{
 		//alert("我是弹出的子页面");
 		create_swf();
+		$("#btn_save").hide();
 	});
 	
 	var jcrop_api, boundx, boundy;
@@ -48,6 +51,7 @@
 				 	 clear_();
 				 	 jcrop_api.destroy();
 					 alert("图片最小不能小于120*150(w*h)");
+					 closediv();
  				}
             });
             
@@ -78,9 +82,9 @@
 	{
 		$("#target").attr("src","");
 		$("#preview").attr("src","");
-		 $("#target").removeAttr("style");
-		 $("#preview").removeAttr("style");
-		 $("#process").text("");
+		$("#target").removeAttr("style");
+		$("#preview").removeAttr("style");
+		$("#process").text("");
 	}
         	
 	function closediv()
@@ -103,98 +107,50 @@
 		var args="x="+x+"&y="+y+"&w="+w+"&h="+h+"&r="+r+"&file_name="+file_name+"&requestid="+requestid+"&fieldName="+fieldName+"";
 		
 		var result=getJson(args,"${path}/FileUpload/get_thumb.do");
-		//alert(result['result']);
-		
+			
 		//设置回父窗口，然后关闭当前页面
 		var origin=artDialog.open.origin;
 		var returnElement = origin.document.getElementById('returndata');
+		
 		$(returnElement).attr("src",result['result']);
 		$(returnElement).attr("style","");
 		
-		//alert(result['result']);
-		//art.dialog.tips("头像设置成功");
-		alert("头像设置成功");
+		art.dialog.tips("头像设置成功");
+		
 		//暂停一会再关闭
-		window.setTimeout("closediv()",10);
+		window.setTimeout("closediv()",500);
 	}
 	
 	//创建上传按钮
-	var  swf;
 	function  create_swf()
 	{
-		var settings = {
-				flash_url : "${path}/swf_resource/swfupload.swf",
-				upload_url: "${path}/FileUpload/save_pic.do",
-				post_params : {
-							"requestid" : $("#requestid").val(), 
-							"fieldName":"photo"  
-				},
-				file_types : "*.jpg",
-				file_types_description : "JPG图片文件",
- 				custom_settings : {
-				//	progressTarget : "fsUploadProgress"
-				//	cancelButtonId : "btnCancel",
-				//	divStatus:"divStatus"
-				},
-		 		
-				// Button settings
-			    button_width:"100",
-	            button_text:"<span class='button_swf'>上传</span>",
-	            button_image_url: "${path}/swf_resource/swfbg100.png",
-	            button_text_style: ".button_swf {width:100px; height:25px; font-size:12px; text-align:center;vertical-align: middle; font-family:'微软雅黑', ''黑体; color:#1c527a; }",
-	            button_placeholder_id: "spanButtonPlaceHolder" ,
-				
-				//触发事件
-				file_queued_handler : fileQueued,
-				file_queue_error_handler : fileQueueError,
-				file_dialog_complete_handler : fileDialogComplete,
-				upload_start_handler : uploadStart_, //单个文件上传开始
-				upload_progress_handler : uploadProgress,
-				upload_error_handler : uploadError,
-				upload_success_handler : uploadSuccess,
-				upload_complete_handler : uploadComplete_,//单个文件上传over
-				queue_complete_handler : queueComplete	// 队列上传over
-				
-			};
-			swfu = new SWFUpload(settings);
+		var fileId="${fileId}";
+		//var fieldName="${fieldName}";//此处不用传递
+	 	createSwf(fileId, "photo", "上传照片", $("#fileList_photo"), "${path}", 100);
 	}
 	
-	//下面是文件上传的各种监听事件
-	//开始上传[这里只是开始上传的一个提示，真正处理在其他地方]
-function uploadStart_(file) {
-	//alert(file.name+"文件开始上传");
-	$("#process").text(file.name+"  文件正在上传");
-	return true;
-}
 
-//上传完成 
-function uploadComplete_(file) {
-	
-	//alert(file.name+"文件上传完成");
+function uploadSuccess_(file,data)
+{
+	 //alert(file.name+"文件上传完成");
 	$("#process").html(file.name+"  文件上传完成");	
-	//待上传队列是否为0,[是否已经全部上传完毕]
-	if (this.getStats().files_queued === 0) 
-	{	
-		var requestid=$("#requestid").val();
-		var fieldName=$("#fieldName").val();
-		var fileName=hz_encode(replace_(file.name));
-		var downurl="${path}/art_photo/downIMG.do?requestid="+requestid+"&fieldName="+fieldName+"&fileName="+fileName+"";
-		
-		if(jcrop_api)
-		{
-			jcrop_api.destroy();
-		}
-			 
-		$("#target").attr("src",downurl);
-		$("#preview").attr("src",downurl);
-		$("#file_name").val(file.name);
-		
-		create_thumb();
-	}
+	
+	var requestid=$("#requestid").val();
+	var fieldName=$("#fieldName").val();
+	var fileName=hz_encode(replace_(file.name));
+	var downurl="${path}/FileUpload/downIMG.do?requestid="+requestid+"&fieldName="+fieldName+"&fileName="+fileName+"";
+					 
+	$("#target").attr("src",downurl);
+	$("#preview").attr("src",downurl);
+	$("#file_name").val(fileName);
+	
+	create_thumb();
+	$("form").hide();
+	$("#btn_save").show();
+	
 }
 	
 </script>
- 
 	</head>
 	<body>
 			<!-- 参数区域 -->
@@ -212,28 +168,29 @@ function uploadComplete_(file) {
 			<div>
 			 <table>
 			 		<tr>
-			 			<td colspan="2">		
-				 			<form enctype="multipart/form-data" method="post" >
-								<div>
-									<span id="spanButtonPlaceHolder"></span>
-								</div>
-							</form>
-							<div id="process"></div>
+						<td colspan="2" height="100">
+							<!--   字段名是: photo  -->
+					        <div id="outdiv_photo" class="divUpload">
+							</div>
+							<div id="fileList_photo" class="divFileList">
+							</div>
+							<div id="porgress_photo">
+							</div>
 						</td>
 			 		</tr>
 			 		<tr>
 			 			<td width="450px" height="300px">
-			 				<img  id="target"  onload="this.style.display='block'"  style="display:none" src="" alt="" />
+			 				<img  id="target"   src="${path}/demo_files02/target.gif"   />
 			 			</td>
 			 			<td  width="150px" align="center"> 
 			 				<div style="width: 120px; height: 150px; border:1px solid red; overflow:hidden; ">
-                        		<img src="" onload="this.style.display='block'" style="display:none" id="preview" alt="Preview" class="jcrop-preview" />
+                        		<img src="${path}/demo_files02/preview.gif"   id="preview"  class="jcrop-preview" />
                     		</div>
 			 			</td>
 			 		</tr>
 					<tr>
 						<td colspan="2">
-							 <input type="button" value="保存选中区域"  onclick="save_part();" />
+							 <input type="button" id="btn_save" value="保存选中区域"  onclick="save_part();" />
 						</td>
 					</tr>
 			 </table>

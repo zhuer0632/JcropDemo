@@ -29,7 +29,7 @@ function FileProgress(file, targetID) {
 		progressCancel.href = "#";
 		progressCancel.style.visibility = "hidden";
 		progressCancel.appendChild(document.createTextNode(" "));
-
+		
 		var progressText = document.createElement("div");
 		progressText.className = "progressName";
 		progressText.appendChild(document.createTextNode(file.name));
@@ -94,7 +94,7 @@ FileProgress.prototype.setComplete = function () {
 	var oSelf = this;
 	this.setTimer(setTimeout(function () {
 		oSelf.disappear();
-	}, 1000));//队列中所有上传完毕之后，暂停多长时间把完成的任务清空。
+	}, 1000));
 };
 FileProgress.prototype.setError = function () {
 	this.fileProgressElement.className = "progressContainer red";
@@ -104,7 +104,7 @@ FileProgress.prototype.setError = function () {
 	var oSelf = this;
 	this.setTimer(setTimeout(function () {
 		oSelf.disappear();
-	}, 1000));
+	}, 3000));
 };
 FileProgress.prototype.setCancelled = function () {
 	this.fileProgressElement.className = "progressContainer";
@@ -114,7 +114,7 @@ FileProgress.prototype.setCancelled = function () {
 	var oSelf = this;
 	this.setTimer(setTimeout(function () {
 		oSelf.disappear();
-	}, 2000));
+	}, 1000));
 };
 FileProgress.prototype.setStatus = function (status) {
 	this.fileProgressElement.childNodes[2].innerHTML = status;
@@ -164,7 +164,6 @@ FileProgress.prototype.disappear = function () {
 	var reduceHeightBy = 4;
 	var rate = 30;	// 15 fps
 
-	/**
 	if (this.opacity > 0) {
 		this.opacity -= reduceOpacityBy;
 		if (this.opacity < 0) {
@@ -182,7 +181,6 @@ FileProgress.prototype.disappear = function () {
 			this.fileProgressWrapper.style.opacity = this.opacity / 100;
 		}
 	}
-	*/
 
 	if (this.height > 0) {
 		this.height -= reduceHeightBy;

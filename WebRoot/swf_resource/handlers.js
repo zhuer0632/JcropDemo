@@ -17,11 +17,10 @@ function fileQueued(file) {
 		progress.setStatus("Pending...");
 		progress.toggleCancel(true, this);
 
-	} catch (ex) 
-	{
+	} catch (ex) {
 		this.debug(ex);
-		//alert("fileQueued err");
 	}
+
 }
 
 function fileQueueError(file, errorCode, message) {
@@ -56,26 +55,22 @@ function fileQueueError(file, errorCode, message) {
 			break;
 		}
 	} catch (ex) {
-		//alert("fileQueueError err");
         this.debug(ex);
     }
 }
 
-
 function fileDialogComplete(numFilesSelected, numFilesQueued) {
 	try {
 		if (numFilesSelected > 0) {
-		//	document.getElementById(this.customSettings.cancelButtonId).disabled = false;
+			document.getElementById(this.customSettings.cancelButtonId).disabled = false;
 		}
 		
 		/* I want auto start the upload and I can do that here */
 		this.startUpload();
 	} catch (ex)  {
         this.debug(ex);
-        //alert("fileDialogComplete err");
 	}
 }
-
 
 function uploadStart(file) {
 	try {
@@ -88,10 +83,7 @@ function uploadStart(file) {
 		progress.setStatus("Uploading...");
 		progress.toggleCancel(true, this);
 	}
-	catch (ex) {
-		this.debug(ex);
-		//alert("uploadStart err");
-	}
+	catch (ex) {}
 	
 	return true;
 }
@@ -105,7 +97,6 @@ function uploadProgress(file, bytesLoaded, bytesTotal) {
 		progress.setStatus("Uploading...");
 	} catch (ex) {
 		this.debug(ex);
-		//alert("uploadProgress err");
 	}
 }
 
@@ -118,7 +109,6 @@ function uploadSuccess(file, serverData) {
 
 	} catch (ex) {
 		this.debug(ex);
-		//alert("uploadSuccess err");
 	}
 }
 
@@ -171,7 +161,6 @@ function uploadError(file, errorCode, message) {
 		}
 	} catch (ex) {
         this.debug(ex);
-        //alert("uploadError err");
     }
 }
 
