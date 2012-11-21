@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me.ut.DateTimeUT;
 import com.me.ut.ImageUtils;
 import com.me.ut.StringUT;
 import com.me.ut.WebPath;
@@ -31,7 +33,7 @@ import com.me.ut.WebPath;
 @Controller
 @RequestMapping("FileUpload")
 public class FileUpload {
-
+    
     // 上传大图,返回当前原始大图的下载地址
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "save_pic", method = RequestMethod.POST)
@@ -108,6 +110,17 @@ public class FileUpload {
 	}
     }
 
+    @RequestMapping("upload_photo")
+    public ModelAndView upload_photo(
+	    @RequestParam("requestid") String requestid,
+	    @RequestParam("fieldName") String fieldName) {
+	ModelAndView mod = new ModelAndView();
+	mod.addObject("requestid", requestid);
+	mod.addObject("fieldName", fieldName);
+	mod.setViewName("employees/upload_photo");
+	return mod;
+    }
+
     // 生成缩略图，并返回下载地址
     @SuppressWarnings("unchecked")
     @RequestMapping("get_thumb")
@@ -123,7 +136,7 @@ public class FileUpload {
 	String filepath = WebPath.getUploadRootPath() + File.separatorChar
 		+ requestid + File.separatorChar + fieldName
 		+ File.separatorChar;
-
+	fileName = StringUT.Base64_decode(fileName, "UTF-8");
 	String srcImageFile = filepath + fileName;
 
 	// 可能发生缩放了
@@ -133,42 +146,31 @@ public class FileUpload {
 
 	ImageUtils.cut(srcImageFile, result, (int) x, (int) y, (int) w,// 固定值120
 		(int) h);// 固定值150
-	map.put("result", WebPath.SYS_PATH + "/FileUpload/download/"
-		+ requestid + "/" + fieldName + "/thumb" + rnd
-		+ ".jpg.do?time=" + rnd);
+
+	File f = new File(result);
+	f.setLastModified(DateTimeUT.getNowNum() + 1000 * 60);
+
+	String fileName_ = "thumb" + rnd + ".jpg";
+	fileName_ = StringUT.Base64_encode(fileName_, "UTF-8");
+	map.put("result", WebPath.SYS_PATH + "/art_photo/downIMG.do?requestid="
+		+ requestid + "&fieldName=" + fieldName + "&fileName="
+		+ fileName_ + "");
 	return map;
     }
 
-    // public ModelAndView download
-    @RequestMapping(value = "/download/{requestid}/{fieldName}/{fileName}", method = RequestMethod.GET)
-    public ModelAndView download(@PathVariable("requestid") String requestid,
-	    @PathVariable("fieldName") String fieldName,
-	    @PathVariable("fileName") String fileName,
-	    HttpServletRequest request, HttpServletResponse response)
-	    throws Exception {
-
-	// [对于get方法下面两行方法无效，只能通过手工转码]
-	@SuppressWarnings("unused")
-	String referURL = request.getHeader("Referer");
-
-	request.setCharacterEncoding("UTF-8");
-	request.setAttribute("content-type", "text/html;charset=UTF-8");
+    @RequestMapping("downIMG")
+    public ModelAndView downIMG(@RequestParam("requestid") String requestid,
+	    @RequestParam("fieldName") String fieldName,
+	    @RequestParam("fileName") String fileName,
+	    HttpServletRequest request, HttpServletResponse response) {
 
 	java.io.BufferedInputStream bis = null;
 	java.io.BufferedOutputStream bos = null;
 
 	String folePath = StringUT.getUploadFiles();
 
-	// 现在全用base64进行编码传递，因为前端js对url编码支持不好
-	// fileName = Base64UT.decode(fileName);
-	// fileName = URLDecoder.decode(fileName, "UTF-8");
-
-	fileName = new String(fileName.getBytes("ISO-8859-1"), "UTF-8");
-
-	String downLoadPath = folePath + File.separatorChar + requestid
-		+ File.separatorChar + fieldName + File.separatorChar
-		+ fileName;
-
+	String downLoadPath = folePath + "/" + requestid + "/" + fieldName
+		+ "/" + StringUT.Base64_decode(fileName, "UTF-8");
 	System.out.println(downLoadPath);
 
 	// 不存在返回异常
@@ -179,8 +181,23 @@ public class FileUpload {
 	try {
 	    long fileLength = new File(downLoadPath).length();
 	    response.setContentType("application/x-msdownload;");
-	    response.setHeader("Content-disposition", "attachment; filename="
-		    + new String(fileName.getBytes(), "ISO8859-1"));// 下载文件的时候
+
+	    // 下面三个if中的fileName必须直接来自输入参数，没做任何处理。
+	    fileName = StringUT.Base64_decode(fileName, "UTF-8");
+	    fileName = StringUT.UTF8_ISO(fileName);
+	    String head = "";
+	    if (StringUT.isIE(request)) {
+		fileName = URLEncoder.encode(StringUT.ISO_UTF8(fileName),
+			"UTF-8").replace("+", "%20");
+		head = "attachment; filename=" + fileName;
+	    } else if (StringUT.isChrome(request)) {
+		head = "attachment; filename=" + fileName;
+	    } else if (StringUT.isFirefox(request)) {
+		head = "attachment;filename=\"" + fileName + "\"";
+	    }
+	    // response.setHeader("Content-disposition",
+	    // head);// 下载文件的时候
+	    response.setContentType("image/jpeg");
 	    response.setHeader("Content-Length", String.valueOf(fileLength));
 	    bis = new BufferedInputStream(new FileInputStream(downLoadPath));
 	    bos = new BufferedOutputStream(response.getOutputStream());
@@ -193,9 +210,17 @@ public class FileUpload {
 	    e.printStackTrace();
 	} finally {
 	    if (bis != null)
-		bis.close();
+		try {
+		    bis.close();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	    if (bos != null)
-		bos.close();
+		try {
+		    bos.close();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	}
 	return null;
     }

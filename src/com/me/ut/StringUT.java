@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.nutz.lang.Lang;
 import org.springframework.web.servlet.ModelAndView;
@@ -449,4 +452,144 @@ public class StringUT
             return false;
         }
     }
+
+
+    public static String Base64_decode(String input, String code) {
+        String out="";
+        byte[] bs = Base64.decodeBase64(input);
+        try
+        {
+            out= new String(bs,code);
+        }
+        catch (UnsupportedEncodingException e)
+        {   
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+
+    public static String UTF8_ISO(String str)
+    {
+
+        if (isEmpty(str))
+        {
+            return "";
+        }
+
+        String out = "";
+        try
+        {
+            out = new String(str.getBytes("UTF-8"), "ISO-8859-1");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+
+        return out;
+    }
+
+    public static boolean isIE(HttpServletRequest request)
+    {
+
+        boolean out = false;
+
+        // chrome:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML,
+        // like Gecko) Chrome/22.0.1229.94 Safari/537.4
+        // IE:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64;
+        // Trident/4.0; GTB7.4; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;
+        // .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E;
+        // InfoPath.3)
+        String ua = request.getHeader("User-Agent");
+        if (ua.toLowerCase().contains("msie"))
+        {
+            out = true;
+        }
+        return out;
+    }
+
+
+    public static boolean isChrome(HttpServletRequest request)
+    {
+
+        boolean out = false;
+
+        // chrome:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML,
+        // like Gecko) Chrome/22.0.1229.94 Safari/537.4
+        // IE:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64;
+        // Trident/4.0; GTB7.4; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;
+        // .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E;
+        // InfoPath.3)
+        // FF:Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/20100101
+        // Firefox/16.0
+        String ua = request.getHeader("User-Agent");
+        if (ua.toLowerCase().contains("chrome"))
+        {
+            out = true;
+        }
+        return out;
+    }
+
+
+    public static boolean isFirefox(HttpServletRequest request)
+    {
+        boolean out = false;
+        // chrome:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML,
+        // like Gecko) Chrome/22.0.1229.94 Safari/537.4
+        // IE:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64;
+        // Trident/4.0; GTB7.4; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;
+        // .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E;
+        // InfoPath.3)
+        // FF:Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/20100101
+        // Firefox/16.0
+        String ua = request.getHeader("User-Agent");
+        if (ua.toLowerCase().contains("firefox"))
+        {
+            out = true;
+        }
+        return out;
+    }
+    
+    public static String Base64_encode(String input,String code)
+    {
+        String s="";
+        try
+        {
+            s = Base64.encodeBase64String(input.getBytes(code));
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+
+    /**
+     * 
+     * @param bizName
+     * @return
+     */
+    public static String ISO_UTF8(String str)
+    {
+        if (isEmpty(str))
+        {
+            return "";
+        }
+
+        String out = "";
+        try
+        {
+            out = new String(str.getBytes("ISO-8859-1"), "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    
+    
 }

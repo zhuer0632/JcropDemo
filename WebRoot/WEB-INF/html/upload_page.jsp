@@ -15,6 +15,7 @@
 		<script src="${path}/swf_resource/swfupload.queue.js"></script>
 		<script src="${path}/swf_resource/fileprogress.js"></script>
 		<script src="${path}/swf_resource/handlers.js"></script>
+		<script src="${path}/demo_files02/ut.js"></script>
 		<script src="${path}/demo_files02/jquery.Jcrop.js" ></script>
 		
 	<script>
@@ -46,18 +47,8 @@
 				{    
 				 	 clear_();
 				 	 jcrop_api.destroy();
-					
-					 //onload="this.style.display='block'" style="display:none"
-					  
-					 $("#target").attr("onload","this.style.display='block'");
-					 $("#target").attr("style","display:none");
-					 $("#preview").attr("onload","this.style.display='block'");
-					 $("#preview").attr("style","display:none");
-					 
 					 alert("图片最小不能小于120*150(w*h)");
-					 
-					 //return false;
-				}
+ 				}
             });
             
         //变量说明
@@ -184,19 +175,16 @@ function uploadComplete_(file) {
 	//待上传队列是否为0,[是否已经全部上传完毕]
 	if (this.getStats().files_queued === 0) 
 	{	
-		var  downurl="${path}/FileUpload/download/"+$("#requestid").val()+"/"+$("#fieldName").val()+"/"+file.name+".do";
-		//$("#process").append("<a href="+downurl+">下载地址</a>");
+		var requestid=$("#requestid").val();
+		var fieldName=$("#fieldName").val();
+		var fileName=hz_encode(replace_(file.name));
+		var downurl="${path}/art_photo/downIMG.do?requestid="+requestid+"&fieldName="+fieldName+"&fileName="+fileName+"";
 		
 		if(jcrop_api)
 		{
 			jcrop_api.destroy();
 		}
-		
-		//$("#target").attr("src","");
-		//$("#preview").attr("src","");
-		
-		//$("#target").removeAttr("style");
-		//$("#preview").removeAttr("style");
+			 
 		$("#target").attr("src",downurl);
 		$("#preview").attr("src",downurl);
 		$("#file_name").val(file.name);
