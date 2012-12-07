@@ -11,13 +11,17 @@ public class art {
 
     @RequestMapping("upload_page")
     public ModelAndView upload_page(
-	    @RequestParam("fileId") String fileId,
+	    @RequestParam("requestId") String requestId,
 	    @RequestParam("fieldName") String fieldName) {
 	ModelAndView mod = new ModelAndView();
-	mod.addObject("fileId", fileId);
+	mod.addObject("requestId", requestId);
 	mod.addObject("fieldName", fieldName);
 	mod.setViewName("upload_page");
 	return mod;
     }
+    
+    
+    
+    
 
 }

@@ -18,7 +18,7 @@
 			//弹出子页面
 			function opendiv()
 			{	 	
-			var args="fileId=${fileId}&fieldName=${fieldName}";
+			var args="requestId=${requestId}&fieldName=${fieldName}";
 		 	art.dialog.open(
 				"${path}/art/upload_page.do?"+args+"",
 				{

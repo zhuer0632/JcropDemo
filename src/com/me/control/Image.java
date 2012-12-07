@@ -18,7 +18,7 @@ public class Image {
     @RequestMapping("test02")
     public ModelAndView test02() {
 	ModelAndView mod = new ModelAndView();
-	mod.addObject("fileId", StringUT.getUUID());
+	mod.addObject("requestId", StringUT.getUUID());
 	mod.addObject("fieldName", "photo");
 	mod.setViewName("test02");
 	return mod;

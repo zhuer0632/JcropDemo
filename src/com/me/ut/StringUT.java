@@ -29,12 +29,12 @@ public class StringUT
      * D:/tomcat6/webapps/v/WEB-INF/classes/uploadFiles/13e53d
      * b657ab419c876413024f54f389/
      * 
-     * @param requestid
+     * @param requestId
      * @return
      */
-    public static String getUploadFiles(String requestid)
+    public static String getUploadFiles(String requestId)
     {
-        return WebPath.getClassRootPath() + "uploadFiles/" + requestid + "/";
+        return WebPath.getClassRootPath() + "uploadFiles/" + requestId + "/";
     }
 
 
@@ -56,7 +56,7 @@ public class StringUT
     /**
      * 
      * @param queryin
-     *            =assessYear=2011&requestid1=db5348b94ff84e2bad408bf809850f2c&
+     *            =assessYear=2011&requestId1=db5348b94ff84e2bad408bf809850f2c&
      *            authorizeNum
      *            =101&validEndDate=2012-01-02&ID=basicinfo_id&validBeginDate
      *            =%E4%B8%AD%E6%96%87%E6%B5%8B%E8%AF%95

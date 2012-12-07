@@ -139,7 +139,7 @@ public class FileUT
 
 
     /**
-     * 取得指定requestid+列名对应文件夹下的所有文件
+     * 取得指定requestId+列名对应文件夹下的所有文件
      * 
      * @param requestId
      * @param fieldName

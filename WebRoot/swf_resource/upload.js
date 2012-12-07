@@ -158,7 +158,7 @@ function createSwf(fileId,fieldName,btnTxt,fileListObj,sysPath, btnbgWidth)
 			            flash_url : sysPath+"/swf_resource/swfupload.swf",
 			            upload_url : sysPath+"/FileUpload/save_pic.do;jsessionid=${jsessionid}",
 			            post_params : {
-							"requestid" : fileId, 
+							"requestId" : fileId, 
 							"fieldName":fieldName  
 						},
 			            file_size_limit : "0",
@@ -167,7 +167,7 @@ function createSwf(fileId,fieldName,btnTxt,fileListObj,sysPath, btnbgWidth)
 			            file_upload_limit : 100,
 			            file_queue_limit : 0,
 			            custom_settings : {
-			                progressTarget : "porgress_"+fieldName,
+			                progressTarget : "progress_"+fieldName,
 			                cancelButtonId : "cancel_"+fieldName,
 			                divStatus:"status_"+fieldName
 			            },
@@ -184,17 +184,6 @@ function createSwf(fileId,fieldName,btnTxt,fileListObj,sysPath, btnbgWidth)
 						upload_error_handler : uploadError,
 						upload_success_handler : function(file, data)
 						{
-//							var href="javascript:delFile('"+fileId+"','"+fieldName+"','"+replace_(file.name)+"','"+sysPath+"')";
-//							if($(fileListObj).html().indexOf(href)<0)
-//							{
-// 								$(fileListObj).prepend(
-//										"<div><a href=\""+sysPath+"/FileUpload/downIMG.do?requestid="+fileId+"&fieldName="+fieldName+"&fileName="+hz_encode(replace_(file.name))+"&d="+getTime()+"\">"+file.name+"</a>\n" +
-//										"--\n" +
-//										"<a  href=\"javascript:delFile('"+fileId+"','"+fieldName+"','"+replace_(file.name)+"','"+sysPath+"')\">删除</a>\n" +
-//										"<br/></div>"
-//								);
-//							}
-							
 							try {
 								var progress = new FileProgress(file, this.customSettings.progressTarget);
 								progress.setComplete();
@@ -203,12 +192,32 @@ function createSwf(fileId,fieldName,btnTxt,fileListObj,sysPath, btnbgWidth)
 								} catch (ex) {
 								this.debug(ex);
 							}
-							
-							
-							
-						},
-						upload_complete_handler : uploadComplete,
-						queue_complete_handler : queueComplete 	// Queue plugin event
+								if(data.indexOf("small")>=0)
+								{
+									alert("图片最小不能小于120*150(宽*高)");
+									art.dialog.close();
+								}
+								else if(data.indexOf("success")>=0)
+								{
+									var arr=data.split("&");
+									$("#process").html(file.name+"  文件上传完成");	
+									var requestId=$("#requestId").val();
+									var fieldName=$("#fieldName").val();
+									var fileName=hz_encode(replace_(file.name));
+									var downurl=""+sysPath+"/FileUpload/downIMG.do?requestId="+requestId+"&fieldName="+fieldName+"&fileName="+fileName+"";
+									$("#target").attr("src",downurl);
+									$("#preview").attr("src",downurl);
+									$("#file_name").val(fileName);
+									create_thumb(arr[1],arr[2]);
+									$("form").hide();
+									$("#btn_save").show();
+								}
+								else
+								{
+									alert("文件上传失败"+data);
+									art.dialog.close();
+								}
+						}
 		 };
 		 return new SWFUpload(settings);
 }
@@ -254,8 +263,8 @@ function delFile(fileid, fieldName, fileName, sysPath) {
             // data 有三个字段， fieldName,fileName,requestId
 
         	//encodeURIComponent
-        	// requestid=fd570108de1d4ef6ba532bb8a2a84a2c&fieldName=bizLicense&fileName=%E5%A4%8F%E6%98%95%C2%B7%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHibernate.pdf
-        	var str = "requestid="+data.requestId + "&fieldName=" + data.fieldName + "&fileName=" +hz_encode(replace_(data.fileName));
+        	// requestId=fd570108de1d4ef6ba532bb8a2a84a2c&fieldName=bizLicense&fileName=%E5%A4%8F%E6%98%95%C2%B7%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHibernate.pdf
+        	var str = "requestId="+data.requestId + "&fieldName=" + data.fieldName + "&fileName=" +hz_encode(replace_(data.fileName));
             // var s=$("a[href$='"+str+"']").attr("href");
             $("div[id^='fileList']>div>a[href*=\"" + str + "\"]")
 							.parent().remove();

@@ -92,7 +92,6 @@
 			art.dialog.close();
 	}
 	
-		
 	function save_part()
 	{
 		//取得页面上的参数：如果参数太多，可以用 var args=getPostDatas($(document));[common.js]
@@ -102,9 +101,9 @@
 		var h=$("#h").val();
 		var r=$("#r").val();
 		var file_name=$("#file_name").val();
-		var requestid=$("#requestid").val();
+		var requestId=$("#requestId").val();
 		var fieldName=$("#fieldName").val();
-		var args="x="+x+"&y="+y+"&w="+w+"&h="+h+"&r="+r+"&file_name="+file_name+"&requestid="+requestid+"&fieldName="+fieldName+"";
+		var args="x="+x+"&y="+y+"&w="+w+"&h="+h+"&r="+r+"&file_name="+file_name+"&requestId="+requestId+"&fieldName="+fieldName+"";
 		
 		var result=getJson(args,"${path}/FileUpload/get_thumb.do");
 			
@@ -116,7 +115,6 @@
 		$(returnElement).attr("style","");
 		
 		art.dialog.tips("头像设置成功");
-		
 		//暂停一会再关闭
 		window.setTimeout("closediv()",500);
 	}
@@ -124,73 +122,57 @@
 	//创建上传按钮
 	function  create_swf()
 	{
-		var fileId="${fileId}";
+		var requestId="${requestId}";
 		//var fieldName="${fieldName}";//此处不用传递
-	 	createSwf(fileId, "photo", "上传照片", $("#fileList_photo"), "${path}", 100);
+	 	createSwf(requestId, "photo", "上传照片", $("#fileList_photo"), "${path}", 100);
 	}
-	
 
-function uploadSuccess_(file,data)
-{
-	 //alert(file.name+"文件上传完成");
-	$("#process").html(file.name+"  文件上传完成");	
-	
-	var requestid=$("#requestid").val();
-	var fieldName=$("#fieldName").val();
-	var fileName=hz_encode(replace_(file.name));
-	var downurl="${path}/FileUpload/downIMG.do?requestid="+requestid+"&fieldName="+fieldName+"&fileName="+fileName+"";
-					 
-	$("#target").attr("src",downurl);
-	$("#preview").attr("src",downurl);
-	$("#file_name").val(fileName);
-	
-	create_thumb();
-	$("form").hide();
-	$("#btn_save").show();
-	
-}
 	
 </script>
 	</head>
 	<body>
-			<!-- 参数区域 -->
-			<div style="display: none;">
+		<div style="display: none;">
 						<input id="x" name="x" value="">
 		 				<input id="y" name="y" value="">
 		 				<input id="w" name="w" value="">
 		 				<input id="h" name="h" value="">
 		 				<input id="r" name="r" value="">
 		 				<input id="file_name" name="file_name" value="">
-		 				<input id="requestid" name="requestid" value="${requestid}">
+		 				<input id="requestId" name="requestId" value="${requestId}">
 	 					<input id="fieldName" name="fieldName" value="${fieldName}">
 			</div>
 			
 			<div>
 			 <table>
 			 		<tr>
-						<td colspan="2" height="100">
-							<!--   字段名是: photo  -->
-					        <div id="outdiv_photo" class="divUpload">
+			 			<td colspan="2">
+			 				<div id="outdiv_photo" class="divUpload">
 							</div>
+			 			</td>
+			 		</tr>
+			 		<tr>
+						<td colspan="2" height="55">
 							<div id="fileList_photo" class="divFileList">
 							</div>
-							<div id="porgress_photo">
+							<div id="progress_photo">
 							</div>
 						</td>
 			 		</tr>
 			 		<tr>
 			 			<td width="450px" height="300px">
-			 				<img  id="target"   src="${path}/demo_files02/target.gif"   />
+			 				<img id="target" src="${path}/demo_files02/target.gif"   />
 			 			</td>
 			 			<td  width="150px" align="center"> 
 			 				<div style="width: 120px; height: 150px; border:1px solid red; overflow:hidden; ">
-                        		<img src="${path}/demo_files02/preview.gif"   id="preview"  class="jcrop-preview" />
+                        		<img  src="${path}/demo_files02/preview.gif"   id="preview"  class="jcrop-preview" />
                     		</div>
 			 			</td>
 			 		</tr>
 					<tr>
 						<td colspan="2">
 							 <input type="button" id="btn_save" value="保存选中区域"  onclick="save_part();" />
+							 <br>
+							  图片最小不能小于120*150(宽*高)
 						</td>
 					</tr>
 			 </table>
