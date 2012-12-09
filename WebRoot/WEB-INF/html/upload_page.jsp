@@ -20,7 +20,6 @@
 		<script src="${path}/demo_files02/jquery.Jcrop.js" ></script>
 		
 	<script>
-	
 	$(document).ready(function() 
 	{
 		//alert("我是弹出的子页面");
@@ -29,30 +28,25 @@
 	});
 	
 	var jcrop_api, boundx, boundy;
-	function create_thumb()
+	function create_thumb(boundx_in,boundy_in)
 	{
+		boundx=boundx_in;
+		boundy=boundy_in;
+		$("#target").attr("width",boundx_in);
+		$("#target").attr("height",boundy_in);
+		
 		$('#target').Jcrop({
               	onChange: updatePreview,
                 onSelect: updatePreview,
                 aspectRatio: 4 / 5, // 更改选中区域大小的时候，指定的比例。不要跟下面的选中区域大小相矛盾。
-                minSize: [120, 150]  //设置最小选中区域
-                //maxSize:[100,150],
+                minSize: [120, 150],  //设置最小选中区域
+                setSelect: [0, 0, 120, 150]
             }, 
             function () 
             {
-                var bounds = this.getBounds();
-                boundx = bounds[0]; //原始大图的宽度[我们所看到的]
-                boundy = bounds[1]; //原始大图的高度[我们所看到的]
-                //由于第一次的图片会遗留变量boundx,boundy.下面重新刷新一下用于清除该变量。
+                boundx = boundx_in; //原始大图的宽度[我们所看到的]
+                boundy = boundy_in; //原始大图的高度[我们所看到的]
                 jcrop_api = this;
-				jcrop_api.setSelect([10, 10, 130, 160]);
-				if(boundx<120||boundy<150)
-				{    
-				 	 clear_();
-				 	 jcrop_api.destroy();
-					 alert("图片最小不能小于120*150(w*h)");
-					 closediv();
- 				}
             });
             
         //变量说明
@@ -78,20 +72,12 @@
         };
 	}
 	
- 	function clear_()
-	{
-		$("#target").attr("src","");
-		$("#preview").attr("src","");
-		$("#target").removeAttr("style");
-		$("#preview").removeAttr("style");
-		$("#process").text("");
-	}
-        	
 	function closediv()
-	{
-			art.dialog.close();
+	{		
+		 art.dialog.close();
 	}
 	
+		
 	function save_part()
 	{
 		//取得页面上的参数：如果参数太多，可以用 var args=getPostDatas($(document));[common.js]
@@ -115,6 +101,7 @@
 		$(returnElement).attr("style","");
 		
 		art.dialog.tips("头像设置成功");
+		
 		//暂停一会再关闭
 		window.setTimeout("closediv()",500);
 	}
@@ -126,8 +113,6 @@
 		//var fieldName="${fieldName}";//此处不用传递
 	 	createSwf(requestId, "photo", "上传照片", $("#fileList_photo"), "${path}", 100);
 	}
-
-	
 </script>
 	</head>
 	<body>
